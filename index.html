@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语单词听写练习</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(120deg, #fbeaff 0%, #e0f7fa 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background: #fffbea;
+            max-width: 600px;
+            margin: 40px auto 0 auto;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            padding: 0 0 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        /* 顶部进度书签 */
+        .progress-flag {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #d32f2f;
+            color: #fff;
+            font-weight: bold;
+            font-size: 20px;
+            border-radius: 0 0 16px 0;
+            padding: 16px 18px 8px 18px;
+            z-index: 2;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.08);
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 32px 0 64px;
+            position: relative;
+        }
+        .speaker-btn {
+            background: #fff;
+            border: 2px solid #d32f2f;
+            color: #d32f2f;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            margin-right: 16px;
+            box-shadow: 0 2px 8px rgba(211,47,47,0.08);
+        }
+        .top-title {
+            flex: 1;
+            text-align: center;
+            font-size: 22px;
+            color: #6d3e9c;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .top-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .action-btn {
+            background: #fff;
+            border: 2px solid #ff9800;
+            color: #ff9800;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .action-btn:hover {
+            background: #ffe0b2;
+        }
+        /* 输入大白框 */
+        .big-input-area {
+            background: #fff;
+            border-radius: 16px;
+            margin: 32px 32px 0 32px;
+            padding: 32px 24px 24px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        .big-input-area .input-row {
+            border-bottom: 2px solid #eee;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+        }
+        .big-input-area .input-row:last-child {
+            border-bottom: none;
+        }
+        .word-input {
+            width: 100%;
+            font-size: 24px;
+            border: none;
+            outline: none;
+            background: transparent;
+            text-align: left;
+            color: #d32f2f;
+            font-family: inherit;
+        }
+        /* 进度条 */
+        .progress-bar-wrap {
+            width: 80%;
+            margin: 24px auto 0 auto;
+            height: 16px;
+            background: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d32f2f 60%, #ffb74d 100%);
+            border-radius: 8px;
+            transition: width 0.3s;
+        }
+        /* 提交按钮 */
+        .submit-btn {
+            background: #d32f2f;
+            color: #fff;
+            border: none;
+            border-radius: 20px 20px 20px 20px;
+            font-size: 20px;
+            padding: 10px 40px;
+            position: absolute;
+            right: 32px;
+            bottom: -28px;
+            box-shadow: 0 2px 8px rgba(211,47,47,0.12);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .submit-btn:hover {
+            background: #b71c1c;
+        }
+        /* 卡通蘑菇 */
+        .mushroom {
+            position: absolute;
+            left: 16px;
+            bottom: 8px;
+            width: 60px;
+            z-index: 1;
+        }
+        /* 结果页样式 */
+        .awesome {
+            font-family: 'Pacifico', cursive;
+            font-size: 60px;
+            color: #222;
+            text-align: center;
+            margin-top: 32px;
+            margin-bottom: 0;
+            letter-spacing: 2px;
+        }
+        .star-bar {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .star-bar .star {
+            font-size: 32px;
+            color: #ffd600;
+            margin: 0 2px;
+        }
+        .result-card {
+            background: #ff6f6f;
+            border-radius: 18px;
+            margin: 0 auto 24px auto;
+            padding: 32px 16px 24px 16px;
+            max-width: 600px;
+            box-shadow: 0 2px 12px rgba(255,111,111,0.12);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+        }
+        .result-card .aiwrite {
+            position: absolute;
+            top: 12px;
+            left: 24px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 22px;
+            opacity: 0.7;
+        }
+        .result-card .desc {
+            position: absolute;
+            top: 44px;
+            left: 24px;
+            color: #fff;
+            font-size: 13px;
+            opacity: 0.7;
+        }
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px 12px;
+            width: 100%;
+            margin-top: 32px;
+        }
+        .word-grid .word-cell {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 0;
+            text-align: center;
+            font-family: 'Pacifico', cursive;
+            font-size: 26px;
+            color: #d32f2f;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .word-grid .word-cell:hover {
+            background: #ffe0e0;
+        }
+        .result-tip {
+            text-align: center;
+            color: #d32f2f;
+            font-size: 15px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 700px) {
+            .container, .result-card {
+                max-width: 98vw;
+            }
+            .word-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .word-card {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 32px 36px 28px 36px;
+            border-radius: 18px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.18);
+            z-index: 1000;
+            min-width: 320px;
+            min-height: 180px;
+            text-align: center;
+        }
+        .word-card .close {
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            font-size: 22px;
+            color: #d32f2f;
+            cursor: pointer;
+        }
+        .word-card h2 {
+            margin: 18px 0 10px 0;
+            font-size: 32px;
+            color: #d32f2f;
+            font-family: 'Pacifico', cursive;
+            font-weight: normal;
+            letter-spacing: 2px;
+        }
+        .word-card p {
+            margin: 8px 0;
+            font-size: 20px;
+            color: #6d3e9c;
+        }
+        .word-card .speaker-icon {
+            display: inline-block;
+            margin: 16px auto 0 auto;
+            font-size: 28px;
+            color: #d32f2f;
+            background: #fffbea;
+            border-radius: 50%;
+            border: 2px solid #d32f2f;
+            width: 44px;
+            height: 44px;
+            line-height: 44px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .word-card .speaker-icon:hover {
+            background: #ffe0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <!-- 进度书签和顶部栏 -->
+        <div class="progress-flag" id="progressFlag">1/6</div>
+        <div class="top-bar">
+            <button class="speaker-btn" onclick="playCurrentWord()">🔊</button>
+            <div class="top-title">音标，释义和词性等</div>
+            <div class="top-actions">
+                <button class="action-btn" onclick="restartCurrentWord()" title="重做"><span style="font-size:18px;">⟳</span></button>
+                <button class="action-btn" onclick="restartQuiz()" title="刷新"><span style="font-size:18px;">↻</span></button>
+            </div>
+        </div>
+        <!-- 输入大白框区域 -->
+        <div class="big-input-area">
+            <div class="input-row">
+                <input type="text" id="wordInput" class="word-input" placeholder="请输入听到的单词" onkeypress="handleKeyPress(event)">
+            </div>
+            <button class="submit-btn" onclick="submitWord()">Submit</button>
+        </div>
+        <!-- 进度条 -->
+        <div class="progress-bar-wrap">
+            <div class="progress-bar" id="progressBar" style="width:0%"></div>
+        </div>
+        <!-- 卡通蘑菇 -->
+        <img src="https://img.alicdn.com/imgextra/i2/O1CN01QwQn6B1wQwQn6B1wQwQn6B1wQwQn6B_!!6000000000000-2-tps-120-120.png" class="mushroom" alt="mushroom">
+    </div>
+
+    <!-- 结果页 -->
+    <div id="resultPage" style="display:none;">
+        <div class="awesome">Awesome!</div>
+        <div class="star-bar">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <div class="result-card">
+            <div class="aiwrite">AI Write</div>
+            <div class="desc" id="resultDesc"></div>
+            <div class="word-grid" id="resultGrid"></div>
+        </div>
+        <div class="result-tip">共<span id="resultCount"></span>小题，点击题号查看详情</div>
+    </div>
+
+    <!-- 单词卡片弹窗复用原有 -->
+    <div class="word-card" id="wordCard">
+        <span class="close" onclick="closeWordCard()">×</span>
+        <h2 id="cardWord"></h2>
+        <p id="cardPhonetic"></p>
+        <p id="cardMeaning"></p>
+        <span class="speaker-icon" onclick="playWordCard()">🔊</span>
+    </div>
+
+    <script>
+        const allWords = [
+            { word: 'apple', phonetic: '/ˈæpl/', meaning: '苹果' },
+            { word: 'banana', phonetic: '/bəˈnɑːnə/', meaning: '香蕉' },
+            { word: 'computer', phonetic: '/kəmˈpjuːtər/', meaning: '电脑' },
+            { word: 'dictionary', phonetic: '/ˈdɪkʃənəri/', meaning: '字典' },
+            { word: 'elephant', phonetic: '/ˈelɪfənt/', meaning: '大象' },
+            { word: 'freedom', phonetic: '/ˈfriːdəm/', meaning: '自由' },
+            { word: 'garden', phonetic: '/ˈɡɑːdn/', meaning: '花园' },
+            { word: 'hospital', phonetic: '/ˈhɒspɪtl/', meaning: '医院' },
+            { word: 'internet', phonetic: '/ˈɪntənet/', meaning: '互联网' },
+            { word: 'journey', phonetic: '/ˈdʒɜːni/', meaning: '旅行' },
+            { word: 'knowledge', phonetic: '/ˈnɒlɪdʒ/', meaning: '知识' },
+            { word: 'language', phonetic: '/ˈlæŋɡwɪdʒ/', meaning: '语言' },
+            { word: 'mountain', phonetic: '/ˈmaʊntɪn/', meaning: '山' },
+            { word: 'nature', phonetic: '/ˈneɪtʃər/', meaning: '自然' },
+            { word: 'ocean', phonetic: '/ˈəʊʃn/', meaning: '海洋' },
+            { word: 'picture', phonetic: '/ˈpɪktʃər/', meaning: '图片' },
+            { word: 'question', phonetic: '/ˈkwestʃən/', meaning: '问题' },
+            { word: 'restaurant', phonetic: '/ˈrestrɒnt/', meaning: '餐厅' },
+            { word: 'student', phonetic: '/ˈstjuːdnt/', meaning: '学生' },
+            { word: 'teacher', phonetic: '/ˈtiːtʃər/', meaning: '老师' }
+        ];
+
+        let words = [];
+        let currentIndex = 0;
+        let results = [];
+        let totalCount = 8; // 默认8题
+
+        // 随机选择单词
+        function selectRandomWords(count = 8) {
+            const shuffled = [...allWords].sort(() => 0.5 - Math.random());
+            words = shuffled.slice(0, count);
+        }
+
+        // 播放当前单词
+        function playCurrentWord() {
+            const word = words[currentIndex].word;
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+
+        // 重新做当前题
+        function restartCurrentWord() {
+            document.getElementById('wordInput').value = '';
+            playCurrentWord();
+        }
+        // 刷新整个测验
+        function restartQuiz() {
+            location.reload();
+        }
+
+        // 处理回车键
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                submitWord();
+            }
+        }
+
+        // 提交单词
+        function submitWord() {
+            const currentWord = words[currentIndex].word;
+            const userInput = document.getElementById('wordInput').value.trim();
+            if (!userInput) {
+                alert('请输入单词！');
+                return;
+            }
+            results.push({
+                word: currentWord,
+                userInput: userInput,
+                isCorrect: userInput.toLowerCase() === currentWord.toLowerCase()
+            });
+            currentIndex++;
+            document.getElementById('wordInput').value = '';
+            updateProgress();
+            if (currentIndex < words.length) {
+                playCurrentWord();
+            } else {
+                showResults();
+            }
+        }
+
+        // 更新进度条和进度数
+        function updateProgress() {
+            document.getElementById('progressFlag').textContent = `${Math.min(currentIndex+1, totalCount)}/${totalCount}`;
+            document.getElementById('progressBar').style.width = `${(currentIndex/totalCount)*100}%`;
+        }
+
+        // 显示结果页
+        function showResults() {
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'block';
+            document.getElementById('resultCount').textContent = totalCount;
+            document.getElementById('resultDesc').textContent = 'AI Write';
+            // 生成单词格子
+            const grid = document.getElementById('resultGrid');
+            grid.innerHTML = '';
+            results.forEach((result, idx) => {
+                const cell = document.createElement('div');
+                cell.className = 'word-cell';
+                cell.textContent = result.word;
+                cell.onclick = () => showWordCard(idx);
+                grid.appendChild(cell);
+            });
+        }
+
+        // 显示单词卡片
+        function showWordCard(index) {
+            const word = words[index];
+            document.getElementById('cardWord').textContent = word.word;
+            document.getElementById('cardPhonetic').textContent = word.phonetic;
+            document.getElementById('cardMeaning').textContent = word.meaning;
+            document.getElementById('wordCard').style.display = 'block';
+        }
+        // 关闭单词卡片
+        function closeWordCard() {
+            document.getElementById('wordCard').style.display = 'none';
+        }
+        // 播放单词卡片中的单词
+        function playWordCard() {
+            const word = document.getElementById('cardWord').textContent;
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+        // 初始化
+        selectRandomWords(totalCount);
+        updateProgress();
+        playCurrentWord();
+    </script>
+</body>
+</html> 
